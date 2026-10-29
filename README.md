@@ -20,3 +20,36 @@ not a reliable estimate — treat this as an exploratory notebook, not a validat
   work (myocardial radiomic feature extraction), unrelated task and dataset.
 - [`smiles`](https://github.com/denis-samatov/smiles) — an unrelated repository (vision-language
   model guides); the similar name is coincidental.
+
+
+## Corrected software path and validation boundary
+
+Run the notebook in order from a fresh kernel. Targets are float binary labels; batch size 1
+is supported. Training, history and checkpoint inference now consistently use PyTorch.
+The small MedNeXt default is for memory-bounded development, not the historical configuration.
+Outputs of changed model/training/inference cells were cleared; no replacement performance
+numbers or fresh CT training are claimed. Historical unrelated data-loading output is retained.
+
+The seed and sorted scan paths fix a stratified 70/15/15 **scan-level** split, saved locally as
+`split_manifest.json`. Validation selects checkpoints; test is held out until final evaluation.
+Without patient/site identifiers this does not establish patient-disjoint evaluation.
+NIfTI is canonicalized using its affine before HU clipping and resizing to 128×128×64. The final
+array resize is an index-grid model input convention; physical spacing/distances are not
+preserved and the model must not be interpreted as a physical measurement tool.
+
+Offline CPU regression (synthetic 2×2×2 volumes; no download):
+
+```bash
+python -m pytest tests -q
+```
+
+Before a new scientific run, pin the MedNeXt source revision and environment, record source
+archive SHA-256 plus rights/attribution, check patient grouping, freeze the split manifest,
+measure actual CPU/GPU peak memory with batch 1, and compare a simple baseline. Save test
+predictions and report sensitivity/specificity/AUROC with uncertainty and calibration limits.
+The two historical CT archives/model weights are not downloaded or qualified by these tests.
+Repository availability and these local repairs do not establish clinical or production readiness.
+
+The additional synthetic NIfTI test checks affine-driven left/right canonicalization and the
+128×128×64 index-grid output using NiBabel 5.4.2. It does not qualify physical spacing fidelity,
+full MedNeXt peak memory or a real CT population.
