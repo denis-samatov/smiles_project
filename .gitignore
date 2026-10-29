@@ -1,0 +1,7 @@
+MosMedData/
+mednext/
+*.zip
+*.pth
+split_manifest.json
+__pycache__/
+.pytest_cache/
